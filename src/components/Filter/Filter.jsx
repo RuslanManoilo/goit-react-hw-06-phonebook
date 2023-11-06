@@ -1,6 +1,14 @@
-import { FilterInput, FilterLabel } from "./Filter.styled";
+import { useDispatch } from "react-redux";
+import { currentFilter } from "redux/filterSlice";
+import { FilterInput, FilterLabel } from "components/Filter/Filter.styled";
 
-export const Filter = ({ onFilterChange }) => {
+
+export const Filter = () => {
+
+    const dispatch = useDispatch();
+    
+    const handlerChange = evt => (dispatch(currentFilter(evt.target.value.toLowerCase())));
+
     return (
         <>
             <FilterLabel htmlFor="filerValue">Find contacts by name</FilterLabel>
@@ -9,7 +17,7 @@ export const Filter = ({ onFilterChange }) => {
                 id="filerValue"
                 type="text"
                 required
-                onChange={onFilterChange}
+                onChange={handlerChange}
             />
         </>
     );

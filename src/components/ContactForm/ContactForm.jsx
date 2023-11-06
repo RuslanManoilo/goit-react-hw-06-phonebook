@@ -1,32 +1,31 @@
-import { nanoid } from "nanoid";
+import { useDispatch, useSelector } from "react-redux";
+import { addContact } from "redux/contactsSlice";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { ErrorNotification, FormBtn, FormInput, FormLabel, FormWrapper } from "./ContactForm.styled";
- 
+import { toast } from 'react-toastify';
+import { ErrorNotification, FormBtn, FormInput, FormLabel, FormWrapper } from "components/ContactForm/ContactForm.styled"; 
 
-const formSchema = Yup.object().shape({
-    name: Yup.string()
-        .min(2, 'Too Short!')
-        .required('This field is required!'),
-    number: Yup.string()
-        .min(4, 'Too Short!')
-        .required('This field is required!'),
-});
 
-export const ContactForm = ({ getContact }) => {
+export const ContactForm = () => {
+
+    const contacts = useSelector(state => state.contacts);
+    const dispatch = useDispatch();
+
     return (
         <Formik
             initialValues={{
                 name: '',
                 number: '',
             }}
+
             validationSchema={formSchema}
+
             onSubmit={(values, actions) => {
-                getContact({
-                    id: nanoid(),
-                    name: values.name,
-                    number: values.number,
-                });
+                contacts.some(contact => contact.name.toLowerCase() === values.name.toLowerCase()) ?
+                    toast.error(`${values.name} is already in contacts.`)
+                    :
+                    dispatch(addContact(values));
+                
                 actions.resetForm();
             }}
         >
@@ -53,3 +52,12 @@ export const ContactForm = ({ getContact }) => {
         </Formik>
     );
 };
+
+const formSchema = Yup.object().shape({
+    name: Yup.string()
+        .min(2, 'Too Short!')
+        .required('This field is required!'),
+    number: Yup.string()
+        .min(4, 'Too Short!')
+        .required('This field is required!'),
+});
